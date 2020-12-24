@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset=”utf8”>
+    <title> Drupal HTML5 Examples </title>
+  </head>
+  <body>
+
+  <section>
+
+     <p> Drupal 7 Media - HTML5 Canvas example </p>
+
+    <canvas height="800" width="600" id="freestyle_draw">
+    Your browser does not support HTML5 canvas
+    </canvas>
+
+<script>
+
+  // Controlling the canvas via javascript:
+  var canvasObject = document.getElementById("freestyle_draw");
+  var canvas = canvasObject.getContext("2d");
+
+  // Define the canvas background
+  canvas.fillStyle = "rgb(255, 0, 0)";
+
+  // Define the drawing color
+  canvas.strokeStyle = "rgb(255, 255, 255)";
+
+  // Draw a rectangle somewhere at the top
+  // fillRect(x, y, w, h)
+  canvas.fillRect(50, 50, 100, 100);
+
+</script>
+
+
+  </section>
+
+  </body>
+</html>

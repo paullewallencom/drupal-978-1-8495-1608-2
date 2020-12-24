@@ -1,0 +1,5 @@
+name = "Image Effect - Sepia"
+description = "Adds a Sepia image effect to image styles"
+core = 7.x
+files[] = image_effect_sepia.module
+

@@ -1,0 +1,80 @@
+<?php
+
+/**
+ * @file
+ * Functions implementing the image effects hooks to provide a Sepia color effect
+ */
+
+/**   
+ * Implements hook_image_effect_info().
+ */
+function image_effect_sepia_image_effect_info() {
+
+  $effects = array(
+    'image_sepia' => array(
+      'label' => t('Sepia'),
+      'help' => t('Sepia converts an image to old images look, kinda brown-ish.'),
+      'effect callback' => 'image_sepia_effect',
+      'dimensions passthrough' => TRUE,
+    ),
+  );
+
+  return $effects;
+
+}
+
+
+/**
+ * Image effect callback; Sepia effect of an image resource.
+ *
+ * @param $image
+ *   An image object returned by image_load().
+ * @param $data
+ *   An array of attributes to use when performing the sepia effect.
+ * @return
+ *   TRUE on success. FALSE on failure to turn image to sepia.
+ */   
+function image_effect_sepia_image_sepia_effect(&$image, $data) {
+
+  if (!image_sepia($image)) {
+    watchdog('image', 'Image sepia failed using the %toolkit toolkit on %path (%mimetype, %dimensions)', array('%toolkit' => $image->toolkit, '%path' => $image->source, '%mimetype' => $image->info['mime_type'], '%dimensions' => $image->info['width'] . 'x' . $image->info['height']), WATCHDOG_ERROR);
+    return FALSE;
+  }
+  return TRUE;
+
+}   
+
+
+/**
+ * Our own call back for applying the image effect which will invoke any image toolkit's libraries that implement this sepia color effect
+ *
+ * @param $image
+ *   An image object returned by image_load().
+ */
+function image_sepia(stdClass $image) {
+  return image_toolkit_invoke('sepia', $image);
+}
+
+
+/**
+ * Convert an image to sepia color tone
+ *
+ * @param $image
+ *   An image object. The $image->resource value will be modified by this call.
+ * @return
+ *   TRUE or FALSE, based on success.
+ *
+ */
+function image_effect_sepia_image_gd_sepia(stdClass $image) {
+
+  // PHP installations using non-bundled GD do not have imagefilter.
+  if (!function_exists('imagefilter')) {
+    watchdog('image', 'The image %file could not be applied the sepia effect because the imagefilter() function is not available in this PHP installation.', array('%file' => $image->source));
+    return FALSE;
+  }
+
+ imagefilter($image->resource, IMG_FILTER_GRAYSCALE);
+ return imagefilter($image->resource, IMG_FILTER_COLORIZE, 150, 50, 0);
+
+}
+

@@ -1,0 +1,77 @@
+<?php
+
+/**
+ * Implements hook_block_info().
+ *
+ */
+function packtpub_charts_block_info() {
+  $blocks['content_creation_trend'] = array(
+    'info' => t('Chart: Content Creation Trend'), 
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+
+/**
+ * Implements hook_block_view().
+ *
+ */
+function packtpub_charts_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'content_creation_trend':
+      $block['subject'] = t('Content Creation Trend');
+      $block['content'] = packtpub_charts_chart_content_creation_trend();
+      break;
+  }
+  return $block;
+}
+
+
+
+/**
+ * Callback to create chart data array for content creation trend
+ *
+ */
+function packtpub_charts_chart_content_creation_trend() {
+
+  $sql = "SELECT COUNT( n.nid ) AS count, DATE_FORMAT( FROM_UNIXTIME( n.created ) ,  '%a' ) AS day FROM node n GROUP BY day";
+  $result = db_query($sql);
+
+  $data = array();
+  foreach ($result as $item) {
+    $nodes = array();
+    $nodes['day'] = $item->day;
+    $nodes['count'] = $item->count;
+    $data[] = $nodes;
+  }
+
+  $chart = array(
+    'title' => 'Content Creation Trend',
+    'fields' => array(
+      'count' => array(
+        'label' => t('Count'),
+        'enabled' => TRUE,
+      ),
+      'day' => array(
+        'label' => t('Day'),
+        'enabled' => TRUE,
+      ),
+    ),
+    'xAxis' => array(
+      'labelField' => 'day',
+    ),
+    'data' => $data,
+    'type' => 'pie',
+  );
+
+
+  return array(
+    '#theme' => 'visualization',
+    '#options' => $chart,
+  );
+
+}

@@ -1,0 +1,4 @@
+name = PacktPub Charts
+description = Example module to create charts using the Visualization API
+core = 7.x
+dependencies[] = visualization
